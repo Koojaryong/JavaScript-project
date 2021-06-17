@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        background-image: url(2.png);
+        background-repeat: repeat-x;
+        background-size: cover;
+        text-align: center;
+    }
+
+    .button-wrapper {
+        display: inline-block;
+        margin: 20px 5px;
+        padding: 40px;
+        margin-top: 200px;
+    }
+
+    .dark-button,
+    .dark-button-2 {
+        background: #333;
+    }
+
+    .button {
+        background: #fff;
+        border: none;
+        padding: 2px;
+        cursor: pointer;
+        display: block;
+        position: relative;
+        overflow: hidden;
+        transition: all .35s ease-in-out .35s;
+        margin: 0 auto;
+        width: 155px;
+        text-align: center;
+    }
+
+    .dark-button .button,
+    .dark-button .button span {
+        background: #8d781b;
+        color: #fff;
+    }
+
+    .dark-button .button:after,
+    .dark-button .button:before,
+    .dark-button .button:hover span {
+        background: #fff;
+        color: rgb(17, 17, 16);
+    }
+
+    .dark-button-2 .button,
+    .dark-button-2 .button span {
+        background: rgb(94, 78, 9);
+        color: #fff;
+    }
+
+    .dark-button-2 .button:after,
+    .dark-button-2 .button:before,
+    .dark-button-2 .button:hover span {
+        background: #fff;
+        color: rgb(12, 12, 11);
+    }
+
+    span {
+        display: block;
+        padding: 15px 30px;
+        background: #fff;
+        z-index: 100;
+        position: relative;
+        transition: all .35s ease-in-out .35s;
+    }
+
+    .button:hover span {
+        background: #665912;
+        color: #fff;
+        transition: all .35s ease-in-out .35s;
+    }
+
+    .button:after {
+        bottom: -100%;
+        right: -100%;
+        content: "";
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: #36B4C7;
+        transition: all .35s ease-in-out .5s;
+    }
+
+    .button:hover:after {
+        right: 0;
+        bottom: 0;
+        transition: all ease-in-out .35s;
+    }
+
+    .button:before {
+        top: -100%;
+        left: -100%;
+        content: "";
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: #36B4C7;
+        transition: all .35s ease-in-out .5s;
+    }
+
+    .button:hover:before {
+        left: 0;
+        top: 0;
+        transition: all ease-in-out .35s;
+    }
+
+    .box {
+        margin-top: 200px;
+        font-size: 23px;
+        margin-left: -50px;
+        color: rgb(252, 252, 252);
+        font-style: unset;
+        border: 3px solid whitesmoke;
+        border-style: groove;
+        width: 480px;
+        margin-left: 690px;
+    }
+</style>
+
+<body onload="init()">
+    <h1>
+        <div class="wordArtEffectText"><img src="18.png" width="220">
+    </h1>
+    <hr>
+    <div class="dark-button-2 button-wrapper">
+        <div class="button" onclick="location.href='거울.html'">
+            <span>
+                Mirror (Paint)
+            </span>
+        </div>
+    </div>
+
+    <div class="dark-button button-wrapper">
+        <div class="button" onclick="location.href='화소 점.html'">
+            <span>
+                Point processing
+            </span>
+        </div>
+    </div>
+    <div class="dark-button-2 button-wrapper">
+        <div class="button" onclick="location.href='기하학.html'">
+            <span>
+                Geometric processing
+            </span>
+        </div>
+    </div>
+    <div class="dark-button button-wrapper">
+        <div class="button" onclick="location.href='히스토.html'">
+            <span>
+                Histogram (Basic)
+            </span>
+        </div>
+    </div>
+    <div class="dark-button-2 button-wrapper">
+        <div class="button" onclick="location.href='영상.html'">
+            <span>
+                pixel area processing
+            </span>
+        </div>
+    </div>
+    <br>
+
+    <div class="box">
+        <strong>Phone : 010-7736-8697</strong>
+        <br>
+        <strong>Insta : jaryong_s</strong>
+    </div>
+
+</body>
+
+</html>

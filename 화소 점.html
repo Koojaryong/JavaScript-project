@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src="https://www.jqueryscript.net/demo/jQuery-Plugin-For-Water-Ripple-Animation-ripples/js/jquery.ripples.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            try {
+                $('.a,.b,.c').ripples({
+                    resolution: 256,
+                    perturbance: 0.04
+                });
+            }
+            catch (e) {
+                $('.error').show().text(e);
+            }
+        });
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+        }
+
+        div {
+            position: fixed;
+            font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+        }
+
+        .a {
+            left: 40%;
+            top: 70%;
+            width: 300px;
+            height: 300px;
+            background-size: cover;
+            margin-top: -250px;
+            margin-bottom: -250px;
+        }
+
+        .error {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: #eee;
+            padding: 20px;
+            display: none;
+        }
+
+
+        #outCanvas:hover {
+            -webkit-animation: rotation 1.5s infinite linear;
+        }
+
+        @-webkit-keyframes rotation {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+
+            to {
+                -webkit-transform: rotate(359deg);
+            }
+
+        }
+
+        #canvas {
+            border: 1px solid rgb(17, 17, 17);
+            margin: 0%;
+            width: 250px;
+            margin-top: 330px;
+            float: right;
+            margin-right: 90px;
+
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            float: left;
+            margin-left: 1580px;
+            margin-top: 500px;
+
+        }
+
+        body {
+            background-image: url(3.png);
+            background-repeat: repeat-x;
+            background-size: cover;
+            text-align: center;
+        }
+
+        .main {
+            margin: 0 auto;
+        }
+
+        .canvas {
+            padding: 0;
+            margin: 0 auto;
+            display: block;
+            width: 100px;
+            margin-top: 0px;
+            transition: all ease 2s;
+        }
+
+        .canvas:hover {
+            transform: scale(0);
+
+        }
+
+
+        .text {
+            margin-top: -6px;
+            margin-left: 1470px;
+            float: left;
+            color: rgb(17, 24, 27);
+            font-size: 23px;
+        }
+
+        .text1 {
+            margin-top: 300px;
+            margin-left: 1540px;
+            float: left;
+            color: rgb(2, 13, 17);
+            font-size: 20px;
+        }
+
+        .wrap {
+            height: 10%;
+            float: left;
+            margin-left: 558px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .button {
+            width: 150px;
+            height: 31px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            font-weight: 500;
+            color: rgb(253, 252, 249);
+            background-color: rgb(138, 101, 22);
+            border: none;
+            border-radius: 45px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease 0s;
+            cursor: pointer;
+            outline: none;
+            margin: 10px;
+
+        }
+
+        .button:hover {
+            background-color: #5c400c;
+            box-shadow: 0px 15px 20px rgba(32, 23, 116, 0.4);
+            color: #fff;
+            transform: translateY(-7px);
+        }
+
+        .wordArtEffectText {
+            font-size: 55px;
+            float: left;
+            margin-left: 750px;
+            margin-top: 0px;
+        }
+
+        .in {
+            margin-left: 780px;
+        }
+    </style>
+    <script>
+        // 전역 변수 (중요한 변수들)
+        var outCanvas, outCtx, inFile;  // 캔버스 관련
+        var outPaper; // 캔버스에는 한점한점이 안찍힘. 대신 캔버스에 종이를 붙임.
+
+        var inImageArray, outImageArray;  // 입력 파일 및 배열
+        var inWidth, inHeight, outWidth, outHeight;  // 입력 영상의 폭과 높이
+        function init() {
+            outCanvas = document.getElementById('outCanvas');
+            outCtx = outCanvas.getContext('2d');
+
+        }
+        function openImage() {
+            inFile = document.getElementById('selectFile').files[0];
+            // 중요! 코드 (영상의 크기를 파악)
+            inWidth = inHeight = Math.sqrt(inFile.size);
+            // 입력 2차원 배열을 준비
+            inImageArray = new Array(inHeight); // 512짜리 1차원 배열
+            for (var i = 0; i < inHeight; i++)
+                inImageArray[i] = new Array(inWidth);
+            // RAW 파일  --> 2차원 배열
+            var reader = new FileReader();
+            reader.readAsBinaryString(inFile);
+            reader.onload = function () {
+                var bin = reader.result; // 파일을 덩어리(bin)로 읽었음
+                // 덩어리(bin)에서 한점한점씩 뽑아서, 배열에 넣기
+                for (var i = 0; i < inHeight; i++) {
+                    for (var k = 0; k < inWidth; k++) {
+                        var sPixel = (i * inHeight + k);
+                        var ePixel = (i * inHeight + k) + 1;
+                        inImageArray[i][k] = bin.slice(sPixel, ePixel); // 1개픽셀-->배열
+                    }
+                }
+
+                equalImage();
+            }
+
+        }
+        function displayImage() {
+            // 캔버스 크기를 결정
+            outCanvas.width = outWidth;
+            outCanvas.height = outHeight;
+            outPaper = outCtx.createImageData(outHeight, outWidth); //종이 붙였음.
+            for (var i = 0; i < outHeight; i++) {
+                for (var k = 0; k < outWidth; k++) {
+                    var charValue = outImageArray[i][k].charCodeAt(0); // 깨진문자를 숫자로.
+                    outPaper.data[(i * outWidth + k) * 4 + 0] = charValue; // R
+                    outPaper.data[(i * outWidth + k) * 4 + 1] = charValue; // G
+                    outPaper.data[(i * outWidth + k) * 4 + 2] = charValue; // B
+                    outPaper.data[(i * outWidth + k) * 4 + 3] = 255; // Alpha
+                }
+            }
+            outCtx.putImageData(outPaper, 0, 0);
+        }
+        function equalImage() {  // 동일 영상 알고리즘
+            // (중요!) 출력 영상의 크기를 결정... 알고리즘에 따름.
+            outHeight = inHeight;
+            outWidth = inWidth;
+            // 출력 2차원 배열을 준비
+            outImageArray = new Array(outHeight); // 256짜리 1차원 배열
+            for (var i = 0; i < outHeight; i++)
+                outImageArray[i] = new Array(outWidth);
+            // ***** 진짜 영상처리 알고리즘 *****
+            for (var i = 0; i < inHeight; i++) {
+                for (var k = 0; k < inWidth; k++) {
+                    outImageArray[i][k] = inImageArray[i][k];
+                }
+            }
+            displayImage();
+        }
+        //영상처리 함수모음
+        function addImage() {  // 영상 밝게하기 알고리즘
+            for (var i = 0; i < outHeight; i++) {
+                for (var k = 0; k < outHeight; k++) {
+                    //문자를 숫자로 바꿈
+                    pixel = outImageArray[i][k].charCodeAt(0);
+                    //(밝게하기)
+                    pixel += 50;
+                    outImageArray[i][k] = String.fromCharCode(pixel);
+                }
+            }
+            displayImage();
+        }
+        function bwImageAvg() {
+            // (중요!) 출력 영상의 크기를 결정... 알고리즘에 따름.
+            outHeight = inHeight;
+            outWidth = inWidth;
+            // 출력 2차원 배열을 준비
+            outImageArray = new Array(outHeight); // 256짜리 1차원 배열
+            for (var i = 0; i < outHeight; i++)
+                outImageArray[i] = new Array(outWidth);
+
+            // ***** 진짜 영상처리 알고리즘 *****
+            var hap = 0;
+            for (var i = 0; i < inHeight; i++)
+                for (var k = 0; k < inWidth; k++)
+                    hap += inImageArray[i][k].charCodeAt(0);
+            var value = hap / (inHeight * inWidth);
+
+            for (var i = 0; i < inHeight; i++) {
+                for (var k = 0; k < inWidth; k++) {
+                    // 문자 --> 숫자
+                    pixel = inImageArray[i][k].charCodeAt(0);
+                    // **** 요기가 핵심 알고리즘. (흑백)
+                    if (pixel > value)
+                        pixel = 255;
+                    else
+                        pixel = 0;
+                    // 숫자 --> 문자
+                    outImageArray[i][k] = String.fromCharCode(pixel);
+                }
+            }
+            displayImage();
+        }
+        function bwImage() { // 흑백영상 알고리즘
+            // (중요!) 출력 영상의 크기를 결정... 알고리즘에 따름.
+            outHeight = inHeight;
+            outWidth = inWidth;
+            // 출력 2차원 배열을 준비
+            outImageArray = new Array(outHeight); // 256짜리 1차원 배열
+            for (var i = 0; i < outHeight; i++)
+                outImageArray[i] = new Array(outWidth);
+
+            // ***** 진짜 영상처리 알고리즘 *****
+            var value = parseInt(prompt("기준 값", "127"));
+            for (var i = 0; i < inHeight; i++) {
+                for (var k = 0; k < inWidth; k++) {
+                    // 문자 --> 숫자
+                    pixel = inImageArray[i][k].charCodeAt(0);
+                    // **** 요기가 핵심 알고리즘. (흑백)
+                    if (pixel > value)
+                        pixel = 255;
+                    else
+                        pixel = 0;
+                    // 숫자 --> 문자
+                    outImageArray[i][k] = String.fromCharCode(pixel);
+                }
+            }
+            displayImage();
+        }
+
+
+    </script>
+</head>
+
+<body onload='init()'>
+
+
+    <h1>
+        <div class="wordArtEffectText">PHOTO# 변기
+    </h1>
+    <br>
+    <br>
+    <br>
+    <br>
+    <hr>
+    <div class="in">
+        <input style="border: 5px groove rgb(114, 93, 22);" type='file' id='selectFile' onchange='openImage()' />
+    </div>
+    </div>
+
+    <div class="wrap">
+        <botton class="button" type="button" id="photoEq" onclick="equalImage()"> reset </botton>
+        <botton class="button" type="button" id="photoAdd" onclick="addImage()"> bright </botton>
+        <botton class="button" type="button" id="photoBw" onclick="bwImageAvg()"> (avg)gray </botton>
+        <botton class="button" type="button" id="photoBw1" onclick="bwImage()"> gray </botton>
+
+    </div>
+    <div class="main">
+        <div class="text">
+            <dd> 지난날들의 아픈기억 </dd>
+            <br>
+            <dd><strong>흑역사</strong>를 가져와서</dd>
+            <br>
+            <dd>변기속으로 시원하게 날려보내세요.</dd>
+            <br>
+            <dd>(마우스를 이미지에 가져가세요.)</dd>
+        </div>
+        <div class="a" style="background-image:url(5.png)">
+            <div class="canvas">
+                <canvas id='outCanvas' width="200" height="150" style='background-color:rgb(12, 12, 12)'></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="text1">
+        <dd><strong>그림판</strong> (reset=F5)</dd>
+    </div>
+    <canvas id="canvas" width="300" height="200"></canvas>
+    <div class="options">
+        <select id="type">
+            <option value="stroke">실선</option>
+            <option value="square">사각형</option>
+            <option value="eraser">지우개</option>
+        </select>
+        <select id="strokeStyle">
+            <option value="blue">파란색</option>
+            <option value="green">초록색</option>
+            <option value="pink">분홍색</option>
+            <option value="orange">주황색</option>
+        </select>
+        <select id="lineWidth">
+            <option value="5">5px</option>
+            <option value="10">10px</option>
+            <option value="15">15px</option>
+            <option value="20">20px</option>
+        </select>
+    </div>
+
+
+
+
+
+
+    <script>
+        let isAbleDraw = false;
+        const options = {
+            type: 'stroke',
+            strokeStyle: 'blue',
+            lineWidth: 5,
+        };
+        const rects = [];
+        let currentRect = null;
+        document.getElementById('canvas').addEventListener('mousedown', () => {
+            isAbleDraw = true;
+            currentRect = {
+                type: options.type,
+                strokeStyle: options.strokeStyle,
+                lineWidth: options.lineWidth,
+                coordinates: [],
+            };
+        });
+        document.getElementById('canvas').addEventListener('mousemove', (e) => {
+            if (isAbleDraw) {
+                const ctx = e.target.getContext('2d');
+                const [x, y] = [e.offsetX, e.offsetY];
+                currentRect.coordinates.push([x, y]);
+                drawTools.clear();
+                drawTools.execute(rects);
+                if (currentRect.type === 'stroke') drawTools.stroke(currentRect.coordinates, 'rgba(255, 255, 0, .3)', currentRect.lineWidth);
+                if (currentRect.type === 'eraser') drawTools.eraser(currentRect.coordinates, currentRect.lineWidth);
+                if (currentRect.type === 'square') drawTools.square(currentRect.coordinates, 'rgba(255, 255, 0, .3)');
+            }
+        });
+        document.getElementById('canvas').addEventListener('mouseup', () => {
+            isAbleDraw = false;
+            rects.push(currentRect);
+            drawTools.clear();
+            currentRect = null;
+            drawTools.execute(rects);
+            console.log(rects);
+        })
+
+        const drawTools = {
+            clear() {
+                // 캔버스 내용 제거
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            },
+            stroke(coordinates, color, lineWidth) {
+                // 마우스가 이동한 경로를 따라 실선 그리기
+                if (coordinates.length > 0) {
+                    const ctx = document.getElementById('canvas').getContext('2d');
+                    const firstCoordinate = coordinates[0];
+                    ctx.beginPath();
+                    ctx.moveTo(firstCoordinate[0], firstCoordinate[1]);
+                    for (let i = 1; i < coordinates.length; i += 1) {
+                        ctx.lineTo(coordinates[i][0], coordinates[i][1]);
+                    }
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = lineWidth;
+                    ctx.stroke();
+                    ctx.closePath();
+                }
+            },
+            eraser(coordinates, lineWidth) {
+                // 마우스가 이동한 좌표에 따라 하얀색으로 원을 그려서 지우개 기능처럼 동작
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                for (let i = 0; i < coordinates.length; i += 1) {
+                    ctx.beginPath();
+                    const coordinate = coordinates[i];
+                    const [x, y] = coordinate;
+                    ctx.fillStyle = 'white';
+                    ctx.arc(x, y, lineWidth / 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            },
+            execute(rects) {
+                // rects 배열에 저장 된 도형을 기준으로 다시 캔버스에 그림
+                for (let i = 0; i < rects.length; i += 1) {
+                    const rect = rects[i];
+                    const { type } = rect;
+                    if (type === 'stroke') this.stroke(rect.coordinates, rect.strokeStyle, rect.lineWidth);
+                    if (type === 'eraser') this.eraser(rect.coordinates, rect.lineWidth);
+                    if (type === 'square') this.square(rect.coordinates, rect.strokeStyle);
+                }
+            },
+            square(coordinates, color) {
+                // 사각 도형을 그림
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                const start = coordinates[0];
+                const end = coordinates[coordinates.length - 1];
+                const [startX, startY] = start;
+                const [endX, endY] = [end[0] - startX, end[1] - startY];
+                ctx.beginPath();
+                ctx.fillStyle = color;
+                ctx.fillRect(startX, startY, endX, endY);
+                ctx.closePath();
+            },
+        };
+        document.getElementById('type').addEventListener('change', (e) => {
+            options.type = e.target.value;
+        });
+        document.getElementById('strokeStyle').addEventListener('change', (e) => {
+            options.strokeStyle = e.target.value;
+        });
+        document.getElementById('lineWidth').addEventListener('change', (e) => {
+            options.lineWidth = e.target.value;
+        });
+    </script>
+
+
+</body>
+
+</html>
